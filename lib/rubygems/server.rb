@@ -34,6 +34,15 @@ class Gem::Server
   include ERB::Util
   include Gem::UserInteraction
 
+  def sanitize_uri(str)
+    # reject 'javascript' URI scheme, allowing valid HTTP URIs
+    if /\Ahttps?:\/\// =~ str || /\A\// =~ str then
+      str
+    else
+      "#invalid-uri"
+    end
+  end
+
   SEARCH = <<-ERB
       <form class="headerSearch" name="headerSearchForm" method="get" action="/rdoc">
         <div id="search" style="float:right">
@@ -66,9 +75,9 @@ class Gem::Server
     <div id="contextContent">
       <div id="description">
         <h1>Summary</h1>
-  <p>There are <%=values["gem_count"]%> gems installed:</p>
+  <p>There are <%=h values["gem_count"]%> gems installed:</p>
   <p>
-  <%= values["specs"].map { |v| "<a href\"##{u v["name"]}\">#{h v["name"]}</a>" }.join ', ' %>.
+  <%= values["specs"].map { |v| "<a href=\"##{h v["name"]}\">#{h v["name"]}</a>" }.join ', ' %>.
   <h1>Gems</h1>
 
   <dl>
@@ -81,24 +90,24 @@ class Gem::Server
     <b><%=h spec["name"]%> <%=h spec["version"]%></b>
 
     <% if spec["ri_installed"] || spec["rdoc_installed"] then %>
-      <a href="<%=u spec["doc_path"]%>">[rdoc]</a>
+      <a href="<%=h sanitize_uri spec["doc_path"]%>">[rdoc]</a>
     <% else %>
       <span title="rdoc not installed">[rdoc]</span>
     <% end %>
 
     <% if spec["homepage"] then %>
-      <a href="<%=u spec["homepage"]%>" title="<%=h spec["homepage"]%>">[www]</a>
+      <a href="<%=h sanitize_uri spec["homepage"]%>" title="<%=h spec["homepage"]%>">[www]</a>
     <% else %>
       <span title="no homepage available">[www]</span>
     <% end %>
 
     <% if spec["has_deps"] then %>
      - depends on
-      <%= spec["dependencies"].map { |v| "<a href=\"##{u v["name"]}>#{h v["name"]}</a>" }.join ', ' %>.
+      <%= spec["dependencies"].map { |v| "<a href=\"##{h v["name"]}\">#{h v["name"]}</a>" }.join ', ' %>.
     <% end %>
     </dt>
     <dd>
-    <%=spec["summary"]%>
+    <%=h spec["summary"]%>
     <% if spec["executables"] then %>
       <br/>
 
@@ -392,14 +401,14 @@ div.method-source-code pre { color: #ffdead; overflow: hidden; }
       <div id="contextContent">
         <div id="description">
           <h1>Summary</h1>
-          <p><%=doc_items.length%> documentation topics found.</p>
+          <p><%=h doc_items.length%> documentation topics found.</p>
           <h1>Topics</h1>
 
           <dl>
           <% doc_items.each do |doc_item| %>
             <dt>
-              <b><%=doc_item[:name]%></b>
-              <a href="<%=u doc_item[:url]%>">[rdoc]</a>
+              <b><%=h doc_item[:name]%></b>
+              <a href="<%=h sanitize_uri doc_item[:url]%>">[rdoc]</a>
             </dt>
             <dd>
               <%=h doc_item[:summary]%>
