@@ -47,93 +47,92 @@ class Gem::Server
       <form class="headerSearch" name="headerSearchForm" method="get" action="/rdoc">
         <div id="search" style="float:right">
           <label for="q">Filter/Search</label>
-          <input id="q" type="text" style="width:10em" name="q">
+          <input id="q" type="text" style="width:10em" name="q" />
           <button type="submit" style="display:none"></button>
         </div>
       </form>
   ERB
 
   DOC_TEMPLATE = <<-'ERB'
-  <?xml version="1.0" encoding="iso-8859-1"?>
-  <!DOCTYPE html
-       PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?xml version="1.0"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-  <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-  <head>
-    <title>RubyGems Documentation Index</title>
-    <link rel="stylesheet" href="gem-server-rdoc-style.css" type="text/css" media="screen" />
-  </head>
-  <body>
-    <div id="fileHeader">
-<%= SEARCH %>
-      <h1>RubyGems Documentation Index</h1>
-    </div>
-    <!-- banner header -->
-
-  <div id="bodyContent">
-    <div id="contextContent">
-      <div id="description">
-        <h1>Summary</h1>
-  <p>There are <%=h values["gem_count"]%> gems installed:</p>
-  <p>
-  <%= values["specs"].map { |v| "<a href=\"##{h v["name"]}\">#{h v["name"]}</a>" }.join ', ' %>.
-  <h1>Gems</h1>
-
-  <dl>
-  <% values["specs"].each do |spec| %>
-    <dt>
-    <% if spec["first_name_entry"] then %>
-      <a name="<%=h spec["name"]%>"></a>
-    <% end %>
-
-    <b><%=h spec["name"]%> <%=h spec["version"]%></b>
-
-    <% if spec["ri_installed"] || spec["rdoc_installed"] then %>
-      <a href="<%=h sanitize_uri spec["doc_path"]%>">[rdoc]</a>
-    <% else %>
-      <span title="rdoc not installed">[rdoc]</span>
-    <% end %>
-
-    <% if spec["homepage"] then %>
-      <a href="<%=h sanitize_uri spec["homepage"]%>" title="<%=h spec["homepage"]%>">[www]</a>
-    <% else %>
-      <span title="no homepage available">[www]</span>
-    <% end %>
-
-    <% if spec["has_deps"] then %>
-     - depends on
-      <%= spec["dependencies"].map { |v| "<a href=\"##{h v["name"]}\">#{h v["name"]}</a>" }.join ', ' %>.
-    <% end %>
-    </dt>
-    <dd>
-    <%=h spec["summary"]%>
-    <% if spec["executables"] then %>
-      <br/>
-
-      <% if spec["only_one_executable"] then %>
-          Executable is
-      <% else %>
-          Executables are
-      <%end%>
-
-      <%= spec["executables"].map { |v| "<span class=\"context-item-name\">#{h v["executable"]}</span>"}.join ', ' %>.
-
-    <%end%>
-    <br/>
-    <br/>
-    </dd>
-  <% end %>
-  </dl>
-
-      </div>
-     </div>
-    </div>
-  <div id="validator-badges">
-    <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>RubyGems Documentation Index</title>
+  <link rel="stylesheet" href="gem-server-rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body>
+  <div id="fileHeader">
+    <%= SEARCH %>
+    <h1>RubyGems Documentation Index</h1>
   </div>
-  </body>
-  </html>
+  <!-- banner header -->
+
+<div id="bodyContent">
+  <div id="contextContent">
+    <div id="description">
+      <h1>Summary</h1>
+<p>There are <%=h values["gem_count"]%> gems installed:</p>
+<p><%= values["specs"].map { |v| "<a href=\"##{h v["name"]}\">#{h v["name"]}</a>" }.join ', ' %>.</p>
+<h1>Gems</h1>
+
+<dl>
+<% values["specs"].each do |spec| %>
+  <dt>
+  <% if spec["first_name_entry"] then %>
+    <a name="<%=h spec["name"]%>"></a>
+  <% end %>
+
+  <b><%=h spec["name"]%> <%=h spec["version"]%></b>
+
+  <% if spec["ri_installed"] || spec["rdoc_installed"] then %>
+    <a href="<%=h sanitize_uri spec["doc_path"]%>">[rdoc]</a>
+  <% else %>
+    <span title="rdoc not installed">[rdoc]</span>
+  <% end %>
+
+  <% if spec["homepage"] then %>
+    <a href="<%=h sanitize_uri spec["homepage"]%>" title="<%=h spec["homepage"]%>">[www]</a>
+  <% else %>
+    <span title="no homepage available">[www]</span>
+  <% end %>
+
+  <% if spec["has_deps"] then %>
+   - depends on
+    <%= spec["dependencies"].map { |v| "<a href=\"##{h v["name"]}\">#{h v["name"]}</a>" }.join ', ' %>.
+  <% end %>
+  </dt>
+  <dd>
+  <%=h spec["summary"]%>
+  <% if spec["executables"] then %>
+    <br/>
+
+    <% if spec["only_one_executable"] then %>
+        Executable is
+    <% else %>
+        Executables are
+    <%end%>
+
+    <%= spec["executables"].map { |v| "<span class=\"context-item-name\">#{h v["executable"]}</span>"}.join ', ' %>.
+
+  <%end%>
+  <br/>
+  <br/>
+  </dd>
+<% end %>
+</dl>
+
+    </div>
+   </div>
+  </div>
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+</body>
+</html>
   ERB
 
   # CSS is copy & paste from rdoc-style.css, RDoc V1.0.1 - 20041108
